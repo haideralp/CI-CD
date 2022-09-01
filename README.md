@@ -2,8 +2,7 @@
 
 ## Diagram Showing Overview of CI-CD Pipeline
 
-
-
+![image](https://user-images.githubusercontent.com/97620055/187893976-fb340fdd-fbd0-46c8-95ed-77189457d59e.png)
 
 
 ## Definitions:
