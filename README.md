@@ -54,15 +54,16 @@
     - For events to trigger, select to Send me everything. 
 
 ## Creating Jenkins Jobs
+
     - Create new job by selectiong New Item on Jenkins Board. 
     - Enter name of job and select freestyle project as the option and proceed by clicking ok.
     - Generate the following Jobs: 
     
-        * Continuous Integration Job
-        * Merging (Dev to Main) Job
-        * Continuous Delivery Job
-        * Continous Deployment Job
-        * DB_HOST Configruation Job
+        * Continuous Integration 
+        * Merging (Dev to Main) 
+        * Continuous Delivery 
+        * Continous Deployment 
+        * DB_HOST Configruation 
     
   
 ## First Job - Continuous Integration
