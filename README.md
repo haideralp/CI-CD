@@ -48,10 +48,11 @@
 
 ## Configuring Webhooks
 
-    - Step 1: Under same repository settings, click on Webhoots and ADD webhook. 
+- Step 1: Under same repository settings, click on Webhoots and ADD webhook. 
     - Enter the Payload URL as your Jenkins IP followed by port 8080. > http://13.40.148.93:8080/git-webhook/
     - Content type - Select application / json.
     - For events to trigger, select to Send me everything. 
+
 ## Creating Jenkins Jobs 
 
     - Click New Item on the Jenkins Dashboard.
