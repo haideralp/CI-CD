@@ -56,7 +56,9 @@
 ## Creating Jenkins Jobs 
     
     - Click New Item on the Jenkins Dashboard.
-    - Enter Name of Project and Select Freestyle Project and click Ok.
+    
+    - Enter name of project and select freestyle project and click Ok.
+    
     - Create 3 Jobs: CI, Merging and Deployment.
     
     ![CICD - jenkin job creation](https://user-images.githubusercontent.com/97620055/188126835-e0a589de-13cb-44c6-ba66-dacec52bbb60.PNG)
