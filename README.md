@@ -54,7 +54,7 @@
     - For events to trigger, select to Send me everything. 
 
 ## Creating Jenkins Jobs 
-
+    
     - Click New Item on the Jenkins Dashboard.
     - Enter Name of Project and Select Freestyle Project and click Ok.
     - Create 3 Jobs: CI, Merging and Deployment.
