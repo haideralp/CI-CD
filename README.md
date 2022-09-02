@@ -39,25 +39,49 @@
 ## Key Generation & Deployment
 
 - Step 1: Generate a Public/Private key pair. 
-    - Create key in your bash terminal using command >
+    - Create key in your bash terminal using command > `ssh-keygen -t ed25519 -C haider.abedi@gmx.com`
     - Name the key that is identifiable.
-    - Make sure your present in the ~/.ssh directory and copy public key.
+    - Make sure your present in the `~/.ssh directory` and copy content in public key > `clip < ~/.ssh/jen122.pub`
+
 - Step 2: Deploy Key on Github Repo
-    - On the relevant Github repository, go to settings, click deploy and Add Delploy Key.
+    - On the relevant Github repository, go to settings, click deploy and Add Deploy Key.
     - Ensure you allow for write acess and add key. Paste key and save.
+
 ## Configuring Webhooks
+
     - Step 1: Under same repository settings, click on Webhoots and ADD webhook. 
-    - Enter the Payload URL as your Jenkins IP followed by port 8080. >
+    - Enter the Payload URL as your Jenkins IP followed by port 8080. > http://13.40.148.93:8080/git-webhook/
     - Content type - Select application / json.
     - For events to trigger, select to Send me everything. 
 ## Creating Jenkins Jobs 
+
     - Click New Item on the Jenkins Dashboard.
     - Enter Name of Project and Select Freestyle Project and click Ok.
     - Create 3 Jobs: CI, Merging and Deployment.
   
 ## First Job - Continuous Integration
 
+## Second Job -  Merging
 
+
+## Third Job - Deployment
+
+
+
+
+
+
+
+
+
+#### Debugging Issues Common:
+
+- Wrong AMI Ubunti 16.04LTS 1804 ami id
+- AWS access denied
+- port 22 timing out
+- plugins available
+- provisioning script incorrect
+#### Key links / Tests Performed.
 
 ![https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhoo
 
