@@ -6,9 +6,9 @@
 
 ## Key Elements of CI/CD Pipeline:
 
-- Continous Integration (CI) -  developers making small changes and checks to their code. This process is automated to ensure that teams can build, test, and package their applications in a reliable and repeatable way. 
+- **Continous Integration (CI)** -  developers making small changes and checks to their code. This process is automated to ensure that teams can build, test, and package their applications in a reliable and repeatable way. 
 
-- Continuous Delivery (CD) - automated delivery of completed code to environments like testing and development. CD provides an automated and consistent way for code to be delivered to these environments.
+- **Continuous Delivery (CD)** - automated delivery of completed code to environments like testing and development. CD provides an automated and consistent way for code to be delivered to these environments.
 
 
 - Continous Deployment (CD/CDE) -  next step of continuous delivery. Every change that passes the automated tests is automatically placed in production, resulting in many production deployments.
