@@ -55,17 +55,15 @@
 
 ## Creating Jenkins Jobs
 
-    - Create new job by selectiong New Item on Jenkins Board. 
-    - Enter name of job and select freestyle project as the option and proceed by clicking ok.
-    - Generate the following Jobs: 
-    
-        * Continuous Integration 
-        * Merging (Dev to Main) 
-        * Continuous Delivery 
-        * Continous Deployment 
-        * DB_HOST Configruation 
-    
-  
+    - Creat new job by selecting **New Item** on jenkin's dashboard.
+    - Enter name of job and select **freestyle project** as the option and proceed by clicking OK.
+    - Generate the following jobs:
+    - 
+        - Continous Integration 
+        - Mergin (Dev to Main)
+        - Continous Delivery (Manual Starting App)
+        - Continour Deployment (Automating deployment of APP)
+
 ## First Job - Continuous Integration
 
 - General Configs as below:
