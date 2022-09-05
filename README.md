@@ -143,7 +143,7 @@
 - Once all these steps have been carried out, the following 3 pages will indicate the app has been successfully automated to deploy via jenkins.
 
 
-    ### Pagw 1: App Working (Automated)
+    ### Page 1: App Working (Automated)
 ![app jenkin wokring page](https://user-images.githubusercontent.com/97620055/188400621-ecf26273-c1ad-4a23-8ab6-3140b69ddcd2.PNG)
 
     ### Page 2: Posts Working
