@@ -112,13 +112,47 @@
 
 
 ## Third Job - Delivery
+- Once changes have merged, I will prepare the EC2 instance as shown in (repository link), to expediate the process I will be using an **ami** that has the relevant dependeices intstalled.
 
+- I have then configured the third job as follows for delivery so can test to see manually if app work in development environemnt.
+
+
+
+
+- I have lannched app manually to see if it works. This can be shown as below:
+
+![image](https://user-images.githubusercontent.com/97620055/188402716-7da57a10-1eb2-4141-86b1-aa12782c280e.png)
 
 ## Fourth Job - Deployment
+- This job was used to take my delivery from app once verfied it works to automate the deployment without need for manual checks. 
+
+- I configured the job as follows:
+
+
+## Fifth Job - NodeApp to DB Connection
+
+- In this job I will instruct jenkins to automate the creation of DB_HOST variable and connect to the node app as well as fetching data from seeds folder. 
+
+- To do this I have run the following script as follows:
 
 
 
-## Fifth Job - Configuring DB_HOST
+
+## Testing Automation of Deployment
+
+- Once all these steps have been carried out, the following 3 pages will indicate the app has been successfully automated to deploy via jenkins.
+
+
+    ### Pagw 1: App Working (Automated)
+![app jenkin wokring page](https://user-images.githubusercontent.com/97620055/188400621-ecf26273-c1ad-4a23-8ab6-3140b69ddcd2.PNG)
+
+    ### Page 2: Posts Working
+![posts jenkin wokring page](https://user-images.githubusercontent.com/97620055/188400725-6c9c7dca-c4c0-4f90-8b26-d9f05487328b.PNG)
+
+    ### Page 3: Fibonacci Generator Working
+![fibonaaci jenkin wokring page](https://user-images.githubusercontent.com/97620055/188400805-b9a4ccc8-50e0-4222-b6b0-741509f2fe12.PNG)
+
+
 
 
 
@@ -131,16 +165,15 @@
 
 #### Debugging Issues Common:
 
-- Wrong AMI Ubunti 16.04LTS 1804 ami id
-- AWS access denied
-- port 22 timing out
-- plugins available
-- provisioning script incorrect
+- Make sure read console ouput for each job - provisioning script issues.
+- Using the wrong EC2 AMI (ensure Ubuntu 18.04 LTS)
+- AWS access denied - ensure this is set up correctly and configured with right steps
+- CANNOT GET POSTS - Specify Private IP4 address of DB in the variable.
+- Port Timing Out Issues - (22) - Cross-reference the security groups rules for both APP and DB.
+- Ensure correct plugins and dependencies are installed. 
 
-#### Key links / Tests Performed.
+#### Key links:
 
-![https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhoo
+![https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhook
 
-# Dev Branch Commit Testing - Triggering Webook
-# Merging Test
-# Spartans we go war.
+
