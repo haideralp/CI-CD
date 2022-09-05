@@ -11,6 +11,15 @@
 ## Benefits of Ansible
 
 
+## Running of Multiples VMs: Controller, Web (Agent), Database (Agent)
+  
+- Using the vagrant file in IAC repository I spun up three virtual machines that are defined as a controller, web and database as per the diagram shown. 
+- Start Vms: `vagrant up` then check it was successfull with `vagrant status`, if not do so individually. 
+- Ensure three distinguish IP addresses are allocated for them. Controller: `192.168.33.12`, Web:`192.168.33.10`, DB:`192.168.33.11`
+- Check for internet connection on nodes using, `ping ip address of vm` individually.
+- Ensure `sudo apt update/upgrade -y` are run on the agent nodes as well as controller.
+  
+
 ## Setting Up Ansible Controller 
 
 - Ensure python 2.7 and above is installed. 
@@ -27,8 +36,13 @@
 - SSH into specified node (web/db) using: `ssh vagrant@ipofagentnode(app/db)`
 - First time will ask you to confirm, type yes
 - Specify password by typing > default password: `vagrant`
-- Check for connection on nodes using: `ping ip address of node`
-- 
+  
+## Setting up SSH connection from controller to nodes:
+
+- Running `sudo ansible nodename -m ping` will give error due to security reasons so this was then configured in hosts file located in default `cd /etc/ansible/`.
+- Enter hosts file with `sudo nano hosts` once in the default location. 
+- Specify the settings as follows:
+    
 
 
 Ansible Ping
