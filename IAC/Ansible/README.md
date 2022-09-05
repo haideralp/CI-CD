@@ -99,22 +99,26 @@
 # Install in nodejs & npm in webserver
   tasks:
 
-  - name: Install Nodejs
-    apt: pkg=nodejs state=present
+  - name: Retrieve source for nodejs
+    shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - 
+  
+  - name: Install nodejs
+    shell: sudo apt-get install nodejs 
 
   - name: Install NPM
     apt: pkg=npm state=present
 
   - name: Download up-to-date Npm & Mongoose
-    shell:
+    shell: 
      npm install -g npm@latest
      npm install mongoose -y
-# Migrate App folder from local host to webserver.
-  - name: Copy over app folder
-    copy:
-     src: /Users/haide/CI-CD/app
-     dest:
-```
+# Migrate App folder from Github Repo to Webserver.
+  - name: Clone a github repository
+    git:
+       repo: https://github.com/haideralp/CI-CD.git
+       dest: /home/vagrant
+       clone: yes
+       update: yes
 
 
 
