@@ -42,6 +42,85 @@
 - Running `sudo ansible nodename -m ping` will give error due to security reasons so this was then configured in hosts file located in default `cd /etc/ansible/`.
 - Enter hosts file with `sudo nano hosts` once in the default location. 
 - Specify the settings as follows:
+
+
+## Playbook Creations
+
+### Reverse Proxy
+
+- Pre-requistes carried - copied content from server settings on nginx and created a default file in controller with new settings.
+- Ensure when creating reverse proxy file as default (same name will overwrite it), specify web ip: `192.168.33.10`.
+- Create a playbook file using `sudo nano filename.yml`
+- - Enter the configs as below:
+
+``` yaml
+# Setting up playbook to create reverse proxy for web server. 
+
+---
+
+# Add host name
+- hosts: web
+
+# Gather live information
+  gather_facts: yes
+
+# Admin Access Needed
+  become: yes
+
+# Adding Instructions
+  tasks:
+  - name: Reversy Proxy - Copy default file from controller to webserver
+    copy:
+        src: /etc/ansible/default
+        dest: /etc/nginx/sites-available/default
+```
+
+## Creating Nodejs & Npm Playbook
+
+- Once the reverse proxy is configured, create playbook to configure nodejs and npm installation.
+- Enter the configs as below:
+
+``` yaml
+# Create a playbook to install node and npm are inside web.
+# --- three dashes at the of the file of YAML
+
+---
+
+# Add hosts or Name of host server.
+- hosts: web
+# indentation is EXTREMELY IMPORTANT
+# Gather live  information
+  gather_facts: yes
+# Admin Access 
+  become: true
+
+#Add the instructions for nodejs and npm
+
+# Install in nodejs & npm in webserver
+  tasks:
+
+  - name: Install Nodejs
+    apt: pkg=nodejs state=present
+
+  - name: Install NPM
+    apt: pkg=npm state=present
+
+  - name: Download up-to-date Npm & Mongoose
+    shell:
+     npm install -g npm@latest
+     npm install mongoose -y
+# Migrate App folder from local host to webserver.
+  - name: Copy over app folder
+    copy:
+     src: /Users/haide/CI-CD/app
+     dest:
+```
+
+
+
+
+
+
     
 
 
