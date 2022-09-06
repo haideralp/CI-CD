@@ -103,24 +103,23 @@
     shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - 
   
   - name: Install nodejs
-    shell: sudo apt-get install nodejs 
+    shell: sudo apt-get install -y nodejs 
 
   - name: Install NPM
     apt: pkg=npm state=present
 
   - name: Download up-to-date Npm & Mongoose
-    shell: 
+    shell: |
      npm install -g npm@latest
      npm install mongoose -y
 # Migrate App folder from Github Repo to Webserver.
   - name: Clone a github repository
-    git:
+    ansible.builtin.git:
        repo: https://github.com/haideralp/CI-CD.git
        dest: /home/vagrant
        clone: yes
        update: yes
-
-
+```
 
 
 
