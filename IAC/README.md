@@ -1,7 +1,8 @@
 # Infrastructure As A Code (IAC)
 
 ## What is IAC ?
-    - **It's a process where you manage and provision a stable environment by codifying everything and eliminiating any manual processes**
+    
+    - It's a process where you manage and provision a stable environment by codifying everything and eliminiating any manual processes. 
 
 ### Diagram Displaying Tools & Examples of IaC Implementation:
 
