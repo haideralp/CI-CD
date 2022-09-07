@@ -44,14 +44,51 @@
 - Specify the settings as follows:
 
 
-## Playbook Creations
+## Playbook Creations - Best Practice Commands
+
+- `cd /etc/ansible` - Default ansible directory (location of hosts/inventory)
+- `ansible-playbook PLAYBOOK_NAME --syntax-check` - ensure syntax is correct prior to running.
+- `block:` - this allows you to write multiple shell lines in yaml.
+- `ansible-playbook filename.yml` - Running playbook using this command.
+- `ansible all -a "uname -a"` - Check os version of all nodes running in hosts
+- `ansible nodename -a "free"`- determines free memory available.
+- `ansible web/all -a "date" >> filename (to save into a file from console)` - save date to file the date.
+- `ansible web/all -m shell -a "uptime"` - Check uptime 
+- `ansible web -m copy -a "src=/etc/ansible/test.txt dest=/home/vagrant"` - Copy command from src folder to destination node.  
+
+
+### NGINX Installation On Web
+
+``` yaml
+# create a playbook to install nginx inside web
+# --- three dashes at the start of the file    
+
+---
+
+# add hosts or name of the host server
+- hosts: web
+
+# indentation is extremely important
+# gather live information
+  gather_facts: yes
+
+# we need admin permissions
+  become: true
+
+# add the instructions
+  tasks:
+  - name: Install Nginx
+    apt: pkg=nginx state=present
+
+# the nginx server status is running
+``` 
 
 ### Reverse Proxy
 
 - Pre-requistes carried - copied content from server settings on nginx and created a default file in controller with new settings.
 - Ensure when creating reverse proxy file as default (same name will overwrite it), specify web ip: `192.168.33.10`.
 - Create a playbook file using `sudo nano filename.yml`
-- - Enter the configs as below:
+- The first method and easier method is to create `default` file on controller in ansbile directory and replace it on web using the playbook code below: 
 
 ``` yaml
 # Setting up playbook to create reverse proxy for web server. 
@@ -73,9 +110,90 @@
     copy:
         src: /etc/ansible/default
         dest: /etc/nginx/sites-available/default
+  
+  - name: Make sure NGINX service is running after setting up. 
+    become: yes
+    service:
+      name: nginx
+      state: restarted
+      enabled: yes
 ```
 
-## Creating Nodejs & Npm Playbook
+-  The second method which I implemented on second iteration was to do set up reverse proxy using playbook alone as this is more relevant in a production environment. I used the code below:
+
+``` yaml 
+---
+- name : Configure the Reverse Proxy for NodeAPP
+  hosts: web
+
+
+  tasks:
+  - name: Disable NGINX Default Virtual Host
+    become: yes
+    ansible.legacy.command:
+      cmd: unlink /etc/nginx/sites-enabled/default
+
+  - name: Create NGINX conf file
+    become: yes
+    file:
+      path: /etc/nginx/sites-available/node_proxy.conf
+      state: touch
+
+  - name: Amend NGINX Conf file
+    become: yes
+    blockinfile:
+      path: /etc/nginx/sites-available/node_proxy.conf
+      marker: ""
+      block: |
+        server {
+            listen 80;
+            location / {
+                proxy_pass http://192.168.33.10:3000;
+            }
+        }
+
+  - name: Link NGINX Node Reverse Proxy
+    become: yes
+    command:
+      cmd: ln -s /etc/nginx/sites-available/node_proxy.conf /etc/nginx/sites-enabled/node_proxy.conf
+
+  - name: Make sure NGINX service is running
+    become: yes
+    service:
+      name: nginx
+      state: restarted
+      enabled: yes
+```  
+
+## Playbook To Migrate App folder fom Repository
+
+- The next step I took was to clone my repository containing the app folder onto web using the following code:
+
+``` yaml
+ # Setting up playbook to clone app folder to web web server. 
+
+---
+
+# Add host name
+- hosts: web
+
+# Gather live information
+  gather_facts: yes
+
+# Admin Access Needed
+  become: yes
+
+# Adding Instructions
+  tasks:
+   name: Clone github repository
+   ansible.builtin.git:
+       repo: https://github.com/haideralp/CI-CD.git
+       dest: /home/vagrant
+       clone: yes
+       update: yes
+```
+
+# Creating Nodejs & Npm Playbook
 
 - Once the reverse proxy is configured, create playbook to configure nodejs and npm installation.
 - Enter the configs as below:
@@ -108,18 +226,85 @@
   - name: Install NPM
     apt: pkg=npm state=present
 
-  - name: Download up-to-date Npm & Mongoose
-    shell: |
-     npm install -g npm@latest
-     npm install mongoose -y
-# Migrate App folder from Github Repo to Webserver.
-  - name: Clone a github repository
-    ansible.builtin.git:
-       repo: https://github.com/haideralp/CI-CD.git
-       dest: /home/vagrant
-       clone: yes
-       update: yes
+# Enter appclone folder 
+  - name: 
+    shell: cd app/appclone
+
+# Install NPM
+  - name: install npm
+    shell: npm install
 ```
+ 
+## App Deployment on Web
+
+- After the relevant dependencies had been installed, I configured the deployment code as follws:
+
+``` yaml
+# Setting up playbook for deployment of app on web with npm start
+---
+
+- hosts: web
+
+  become: yes
+
+  tasks:
+
+# Enter into appclone folder on web
+  - name: 
+    shell: cd app/appclone
+
+# Run App with npm start
+  - name: start npm
+    start: npm start
+```
+
+## Mongodb Database Configuration 
+
+- Now it is time to configure the database, this was done using the following code for the playbook:
+- Note: `sudo apt-get update/upgrade -y` were run prior to running any playbook on the nodes.
+
+``` yaml
+# Mongodb Playbook Config
+---
+- hosts: db
+  gather_facts: true
+  become: true
+
+  tasks:
+  - name: install mongodb
+    apt: pkg=mongodb state=present
+
+  - name: Remove mongodb file
+    file:
+     path: /etc/mongodb.conf
+     state: absent
+  
+  - name: Touch a file, using symbolic modes to set permission (equivalent to 0644)
+    file:
+     state: touch
+     path: /etc/mongodb.conf
+     mode: u=rw,g=r,o=r
+
+  - name: Insert mutliple lines and backup
+    blockinfile:
+     path: /etc/mongodb.conf
+     backup: yes
+     block: |
+       "storage:
+         dbPath: /var/lib/mongodb
+         journal:
+           enabled: true
+       systemLog:
+         destination: file
+         logAppend: true
+         path: /var/log/mongodb/mongod.log
+       net:
+         port: 27017
+         bindIp: 0.0.0.0"
+```
+
+
+
 
 
 
@@ -140,20 +325,114 @@ default directoy - looked for entry- web - sends to rrequest to it is alive. Sec
 need to make sure end point are awake - can cannot to.
 alwasy ssh from local host when debugging. otherwsie cannot from controller.
 
-ansible all -a "uname -a"
+## EC2 Launch on AWS
 
-ansible web -a "free"
+- I used the process below to launch EC2 isntances using Ansible:
+  
+### Key Dependencies:
+  
+  - Ansible-Vault configured (to encrypt of aws access and secret keys) 
+  - Python 3.7 (3.6.9 - worked for my example) > `sudo apt install python3-pip -y`
+  - pip3 installed > `pip3 install boto boto3` 
+  - awscli installed > `pip3 install awscli`
+  * Ensure the to create a `group_vars` inside it a `all` folder, so structure looks like this `/etc/ansible/group_vars/all/file.yml`. This is where the AWS secret/access keys will be stored, 
+  * To run playbook for ec2 instances from ansible is `sudo ansible-playbook filename.yml --ask-vault-pass --tags ec2_create`.
+  * Automation of ssh key access is needed 
+    * Generate another keypair eng122 as well as create eng122.pem (aws key - same name)
+    * Copy content of file.pem from local host to created eng122.pem in controller.
+    * Playbook upload the .pub file to ec2 for access. 
+  
+### Ansible Vault Creation
+- Follow the steps below:
+  1. Create directory `sudo mkdir group_vars/all`
+  2. Create ansible vault file.yml > `sudo ansible-vault create pass.yml`
+  3. Give it vault password (remember will be required for authentication)
+  4. Launch insert mode in vim with `i`.
+  5. Enter the aws keys > `aws_access_key: xxxxxx / aws_secret_key: xxxxxx`
+  6. Exit vim by > `ESC --> :wq!` and press `Enter`.
+  7. To be able to edit ansbile-vault file.yml give permissions using > `sudo chmod 600 file.yml`
+  8. Check this has beend done with `ll`
 
-ansible web/all -a "date" >> filename (to save into a file from console)
+### Security Keypair Generation
 
-ansible web -m shell -a "uptime"
+- Got to directory /etc/ansible/.ssh/ if .ssh not present create it. 
+- Create keypair with `sudo ssh-keygen -t rsa -b 4096`, give it a name so for this example I did eng122.
+- Copy and paste content using `cat filename.pem` from local host into same file in controller. 
 
-ansible web -m copy -a "src=/etc/ansible/test.txt dest=/home/vagrant"
+## Execute EC2 Launch Playbook using code below:
 
-playbooks - file .yml or .yaml  (yet ain't mark up language)
+- I constructed the following playbook code to launch ec2 instance:
 
+``` yaml 
+
+# AWS Playbook
+---
+- hosts: localhost
+  connection: local
+  gather_facts: True
+  become: True
+  vars:
+    key_name: eng122
+    region: eu-west-1
+    image:  ami-0c31b3fe91357577c
+    id: "Ansible for AWS"
+    sec_group: "sg-0bba8ba0a45e78035"
+    subnet_id: "subnet-0429d69d55dfad9d2"
+# add the following line for force python 3 if errors
+    #ansible_python_interpreter: /usr/bin/python3
+  tasks:
+
+    - name: Facts
+      block:
+
+      - name: Get instances facts
+        ec2_instance_facts:
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          region: "{{ region }}"
+        register: result
+
+    
+    - name: Provisioning EC2 instances
+      block:
+
+      - name: Upload public key to AWS
+        ec2_key:
+          name: "{{ key_name }}"
+          key_material: "{{ lookup('file', '~/.ssh/{{ key_name }}.pub') }}"
+          region: "{{ region }}"
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+
+
+      - name: Provision instance(s)
+        ec2:
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          assign_public_ip: true
+          key_name: "{{ key_name }}"
+          id: "{{ id }}"
+          vpc_subnet_id: "{{ subnet_id }}"
+          group_id: "{{ sec_group }}"
+          image: "{{ image }}"
+          instance_type: t2.micro
+          region: "{{ region }}"
+          wait: true
+          count: 1
+          instance_tags:
+            Name: eng122-haider-ansibleapp
+
+      tags: ['never', 'create_ec2']
+
+```
+
+### Connection to EC2 Instance From Ansible
+
+- I had permision denied issues - still working on why that was.
+- I was able to ssh into my instance using the command below from ansible: `sudo ssh -i ~/.ssh/eng122 ubuntu@ec2-ip.eu-west-1.compute.amazonaws.com`. 
+  
 ## Important Links For Ansible
 
 * Documentation is rapid for ansbile ensure to check regulary for latest updates. 
   
-- 
+run playbook goes to aws to correct authentication and launces a service. 
