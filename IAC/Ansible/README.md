@@ -473,7 +473,7 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
 
 - To connect instances from ansible ping test must be performed as below:
 - Ensure hosts are mentioned in the hosts file. 
-- First  - test connection individually --> `sudo ping ip address on instance` 
+- First  - test connection individually --> `sudo ping ip address of instance` 
 - Second - test connection from controller --> `sudo ansible all -m ping --ask-vault-pass` 
 
 - I had permision denied issues - still working on why that was - see debugging steps below or remove .pem on hosts. 
