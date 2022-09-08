@@ -42,6 +42,22 @@
 - Running `sudo ansible nodename -m ping` will give error due to security reasons so this was then configured in hosts file located in default `cd /etc/ansible/`.
 - Enter hosts file with `sudo nano hosts` once in the default location. 
 - Specify the settings as follows:
+    * `[web]`
+      `192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant`
+    *  [db]
+      `192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant`
+
+- Ensure the file.pem content is present in controller for connection. 
+- Once in cloud, hosts file will look like this:    
+    
+    *  `[aws-ansible]`
+       `ec2-instance ansible_host=ec2-ip ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/file.pem`
+    
+    * `[aws-app]`
+      `ec2-instance ansible_host=ec2-ip ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/file.pem` 
+    
+    * `[aws-db]`
+    *  `ec2-instance ansible_host=ec2-ip ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/file.pem`
 
 
 ## Playbook Creations - Best Practice Commands
@@ -226,6 +242,12 @@
   - name: Install NPM
     apt: pkg=npm state=present
 
+# Ensure pm2 is made globally - downloading
+  - name: Install pm2
+    npm:
+      name: pm2
+      global: yes
+
 # Enter appclone folder 
   - name: 
     shell: cd app/appclone
@@ -303,9 +325,24 @@
          bindIp: 0.0.0.0"
 ```
 
+## Setting DB_Host Variable
 
+```yaml
 
+# Playbook Setting DB Host and Restarting App
 
+# Downloading pm2
+
+- name: Seed and Run App 
+  become_user: root
+  shell: |
+  environment:
+    DB_HOST: mongodb://ubuntu@<Priv-DB IP>:27017/posts?authSource=admin
+  cd appclone/app
+  node seeds/seed.js.
+  pm2 kill
+  pm2 start app.js
+```
 
 
 
@@ -336,7 +373,7 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
   - pip3 installed > `pip3 install boto boto3` 
   - awscli installed > `pip3 install awscli`
   * Ensure the to create a `group_vars` inside it a `all` folder, so structure looks like this `/etc/ansible/group_vars/all/file.yml`. This is where the AWS secret/access keys will be stored, 
-  * To run playbook for ec2 instances from ansible is `sudo ansible-playbook filename.yml --ask-vault-pass --tags ec2_create`.
+  * To run playbook for ec2 instances from ansible is `sudo ansible-playbook filename.yml --ask-vault-pass --tags create_ec2`.
   * Automation of ssh key access is needed 
     * Generate another keypair eng122 as well as create eng122.pem (aws key - same name)
     * Copy content of file.pem from local host to created eng122.pem in controller.
@@ -357,7 +394,7 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
 
 - Got to directory /etc/ansible/.ssh/ if .ssh not present create it. 
 - Create keypair with `sudo ssh-keygen -t rsa -b 4096`, give it a name so for this example I did eng122.
-- Copy and paste content using `cat filename.pem` from local host into same file in controller. 
+- Copy and paste content using `cat filename.pem` from local host into same file in controller use > `clip < ~/.ssh/key.pem`. 
 
 ## Execute EC2 Launch Playbook using code below:
 
@@ -426,13 +463,40 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
 
 ```
 
-### Connection to EC2 Instance From Ansible
+### Connection to EC2 Instance From Ansible - Ping
 
-- I had permision denied issues - still working on why that was.
+- To connect instances from ansible ping test must be performed as below:
+- Ensure hosts are mentioned in the hosts file. 
+- First  - test connection individually --> sudo ping ip address 
+- Second - test connection from controller --> `sudo ansible all -m ping --ask-vault-pass` 
+
+- I had permision denied issues - still working on why that was - see debugging steps below or remove .pem on hosts. 
 - I was able to ssh into my instance using the command below from ansible: `sudo ssh -i ~/.ssh/eng122 ubuntu@ec2-ip.eu-west-1.compute.amazonaws.com`. 
   
 ## Important Links For Ansible
 
 * Documentation is rapid for ansbile ensure to check regulary for latest updates. 
   
-run playbook goes to aws to correct authentication and launces a service. 
+
+
+
+## Debuggin Workaround 
+
+ ** Steps To Ensure Permission for controller + key.pem** 
+
+- Allow controller to ssh into all nodes / port 22 allow it for agent node for all
+- Ensure you have the valid key in your controller
+- SSH into agent node from controller before you try to ping
+- Ad agent ip and the valid key ~/.ssh/file.pem in your hosts
+- sudo chmod 400 filename.pem. 
+
+** Manually setting on AWS Cloud** 
+    
+    step 1 --> launch 3 ec2 instance on aws console - controller, app and node. 
+    step 2 -->  update and upgrade in the user
+    step 2.2 --> generate newfile.pem
+    step 2.3 --> move/copt file.pem to your local host .ssh as well
+    step 3 --> ssh into these servers from your local host
+    step 4 --> ssh into these servers from your ansible controller]
+    step 5-->  add ips to your hosts file as well as the file.pem then ping
+
