@@ -488,7 +488,7 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
 
 ## Debuggin Workaround 
 
- ** Steps To Ensure Permission for controller + key.pem** 
+ **Steps To Ensure Permission for controller + key.pem** 
 
 - Allow controller to ssh into all nodes / port 22 allow it for agent node for all
 - Ensure you have the valid key in your controller
@@ -496,7 +496,7 @@ alwasy ssh from local host when debugging. otherwsie cannot from controller.
 - Ad agent ip and the valid key ~/.ssh/file.pem in your hosts
 - sudo chmod 400 filename.pem. 
 
-** Manually setting on AWS Cloud** 
+**Manually setting on AWS Cloud** 
     
     step 1 --> launch 3 ec2 instance on aws console - controller, app and node. 
     step 2 -->  update and upgrade in the user
