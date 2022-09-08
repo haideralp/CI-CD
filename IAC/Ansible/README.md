@@ -6,10 +6,16 @@
 
 
 ## What is Ansible ?
-- A powerful automation tool used to con
+- A powerful automation tool, which makes it easier (simplifies) for you to provision, configure and deploy your product on web servers. It improves the scalability, consistency, and reliability of your IT environment. 
 
 ## Benefits of Ansible
 
+- Free: Ansible is an open-source tool.
+- Very simple to set up and use: No special coding skills are necessary to use Ansible’s playbooks (more on playbooks later).
+- Powerful: Ansible lets you model even highly complex IT workflows. 
+- Flexible: You can orchestrate the entire application environment no matter where it’s deployed. You can also customize it based - on your needs.
+- Agentless: You don’t need to install any other software or firewall ports on the client systems you want to automate. You also   don’t have to set up a separate management structure.
+- Efficient: Because you don’t need to install any extra software, there’s more room for application resources on your server.
 
 ## Running of Multiples VMs: Controller, Web (Agent), Database (Agent)
   
